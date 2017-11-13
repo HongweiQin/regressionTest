@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $1 ]
+then
+	#change correct answer
+	./testcode > out_correct 2>&1
+else
+	#regression test
+	./testcode > out 2>&1
+	if [[ `diff out out_correct` ]]
+	then
+		##Something is wrong
+		echo "wrong"
+		echo "0" > ../result.temp
+	else
+		##test passed
+		echo "correct"
+		echo "1" > ../result.temp
+	fi
+fi

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+echo "Regression test starts!"
+
+# Create directory logs if necessary
+if [ ! -d logs ]
+then
+	mkdir logs
+fi
+
+cd tests
+
+testTotal=0
+testSucceed=0
+testFail=0
+
+for IterDir in ./*
+do
+	if test -d $IterDir
+	then
+		#It's a directory
+		echo 0 > result.temp
+		cd $IterDir
+		testTotal=`expr ${testTotal} + 1`
+		printf "`basename $IterDir`\t\t********************"
+		
+		./test >../../logs/${IterDir}_log 2>&1
+
+		if [ $(cat ../result.temp | grep -c "1") -eq 1 ]
+		then
+			testSucceed=`expr ${testSucceed} + 1`
+			echo -e "Passed"
+		else
+			testFail=`expr ${testFail} + 1`
+			echo -e "\e[42;31;1mfailed!\e[0m"
+		fi
+
+		cd ..
+	fi
+done
+
+echo "Regression test ends!"
+echo "Total: "${testTotal}" Success: "${testSucceed}" Fail: "${testFail}
